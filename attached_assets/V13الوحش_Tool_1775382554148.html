@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'Hexagone: Strategic Beast v13.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600;700&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --gold: #d4af37; --gold-bright: #f1d592; --navy-deep: #020617; --navy-card: #0f172a; --white: #f8fafc;
+            --usa: #3b82f6; --school: #10b981; --urgent: #ef4444; --airbnb: #FF5A5F; --yt: #ff0000;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--navy-deep); color: var(--white); font-family: 'Inter', 'Noto Sans Arabic', sans-serif; padding: 20px; min-height: 100vh; }
+        .container { max-width: 1600px; margin: 0 auto; }
+        
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(212, 175, 55, 0.2); padding-bottom: 20px; margin-bottom: 30px; }
+        .logo-text h1 { font-family: 'Cinzel', serif; font-size: 32px; color: var(--gold); letter-spacing: 5px; }
+        .logo-text p { font-size: 10px; color: var(--slate); text-transform: uppercase; letter-spacing: 3px; }
+        
+        .main-layout { display: grid; grid-template-columns: 420px 1fr; gap: 30px; }
+        @media (max-width: 1100px) { .main-layout { grid-template-columns: 1fr; } }
+        
+        .sidebar { display: flex; flex-direction: column; gap: 20px; }
+        .panel { background: var(--navy-card); padding: 25px; border-radius: 12px; border-left: 5px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        .keyword-hub h3 { font-family: 'Cinzel'; color: var(--gold); font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid rgba(212,175,55,0.1); padding-bottom: 5px; }
+        .kw-tag { display: inline-block; font-size: 10px; background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; margin: 2px; color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); }
+        .kw-tag.active { border-color: var(--gold); color: var(--gold-bright); font-weight: bold; }
+
+        textarea { width: 100%; height: 350px; background: var(--navy-deep); border: 1px solid rgba(255,255,255,0.1); color: var(--white); padding: 15px; font-size: 13px; border-radius: 8px; outline: none; margin-bottom: 15px; transition: 0.3s; }
+        textarea:focus { border-color: var(--gold); }
+        
+        .btn-gold { width: 100%; background: var(--gold); color: var(--navy-deep); border: none; padding: 18px; font-family: 'Cinzel'; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 14px; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-gold:hover { background: var(--gold-bright); transform: translateY(-2px); }
+
+        .tabs-nav { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .tab-btn { padding: 15px 25px; background: transparent; border: none; color: #94a3b8; cursor: pointer; font-family: 'Cinzel'; border-bottom: 3px solid transparent; transition: 0.3s; }
+        .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); background: rgba(212, 175, 55, 0.05); }
+
+        .grid-view { display: grid; gap: 20px; }
+        .card { background: var(--navy-card); padding: 25px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); position: relative; transition: 0.3s; animation: slideUp 0.5s ease; }
+        .card:hover { border-color: var(--gold); transform: translateX(5px); }
+        
+        .badge { font-size: 9px; font-weight: 700; padding: 4px 10px; border-radius: 3px; text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
+        .b-usa { background: var(--usa); color: white; }
+        .b-school { background: var(--school); color: white; }
+        .b-urgent { background: var(--urgent); color: white; }
+        .b-airbnb { background: var(--airbnb); color: white; }
+        .b-yt { background: var(--yt); color: white; }
+
+        .pitch-box { background: var(--navy-deep); border-left: 4px solid var(--gold); padding: 15px; margin-top: 15px; font-style: italic; color: #cbd5e1; font-size: 13px; line-height: 1.6; }
+        .delete-btn { position: absolute; top: 15px; right: 15px; color: var(--urgent); cursor: pointer; opacity: 0.3; transition: 0.3s; }
+        .delete-btn:hover { opacity: 1; }
+
+        .vision-engine { background: rgba(212, 175, 55, 0.08); border: 1px solid var(--gold); padding: 25px; border-radius: 12px; margin-bottom: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .hidden { display: none; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo-text">
+                <h1>L'HEXAGONE</h1>
+                <p>Strategic Beast v13.0 | The Final Sovereign</p>
+            </div>
+            <div class="header-actions" style="display: flex; gap: 10px;">
+                <button class="btn-gold" style="padding: 10px 20px; font-size: 11px;" id="exportBtn"><i class="fa-solid fa-file-csv"></i> Export Strategic Vault</button>
+                <button class="btn-gold" style="padding: 10px 20px; font-size: 11px; background: transparent; border: 1px solid var(--urgent); color: var(--urgent);" id="clearBtn"><i class="fa-solid fa-trash-can"></i> Wipe Vault</button>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <div class="sidebar">
+                <div class="panel">
+                    <h2 style="color:var(--gold); font-family:Cinzel; font-size:16px; margin-bottom:15px;">Universal Ingestion</h2>
+                    <textarea id="dataInput" placeholder="Drop data from USA, Airbnb, School Forums, OLX, or YouTube here..."></textarea>
+                    <button class="btn-gold" id="processBtn"><i class="fa-solid fa-bolt"></i> Raid & Analyze Intelligence</button>
+                </div>
+
+                <div class="panel keyword-hub">
+                    <h3>USA & GLOBAL (US Classifieds)</h3>
+                    <div class="kw-tag active">FSBO</div> <div class="kw-tag active">Tax-free</div> <div class="kw-tag active">Investment</div> <div class="kw-tag active">USA Property</div>
+                    
+                    <h3 style="margin-top:15px;">INVESTOR PAIN (Airbnb/OLX)</h3>
+                    <div class="kw-tag active">Superhost</div> <div class="kw-tag active">بداعي السفر</div> <div class="kw-tag active">لقطة</div> <div class="kw-tag active">كاش</div>
+                    
+                    <h3 style="margin-top:15px;">VVIP DESIRE (Social/Schools)</h3>
+                    <div class="kw-tag active">مصاريف المدارس</div> <div class="kw-tag active">حفظ قيمة المال</div> <div class="kw-tag active">800% ROI</div>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="tabs-nav">
+                    <button class="tab-btn active" id="tabVerified">Verified VVIPs (<span id="countVerified">0</span>)</button>
+                    <button class="tab-btn" id="tabArchive">Market Intelligence (<span id="countArchive">0</span>)</button>
+                </div>
+
+                <div id="viewVerified" class="grid-view"></div>
+                
+                <div id="viewArchive" class="hidden">
+                    <div id="visionEngine" class="vision-engine hidden">
+                        <div><h3 style="color:var(--gold); font-family:Cinzel; margin-bottom:10px;"><i class="fa-solid fa-brain"></i> Strategic Assessment</h3><div id="visionInsights" style="font-size:13px; color:#cbd5e1;"></div></div>
+                        <div><h3 style="color:var(--gold); font-family:Cinzel; margin-bottom:10px;"><i class="fa-solid fa-pen-nib"></i> Intelligence Hooks</h3><div id="visionHooks"></div></div>
+                    </div>
+                    <div id="archiveGrid" class="grid-view"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dataInput = document.getElementById('dataInput');
+        const processBtn = document.getElementById('processBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const viewVerified = document.getElementById('viewVerified');
+        const viewArchive = document.getElementById('viewArchive');
+        const archiveGrid = document.getElementById('archiveGrid');
+        const visionEngine = document.getElementById('visionEngine');
+        
+        let vault = JSON.parse(localStorage.getItem('hex_v13_vault')) || { verified: [], archive: [] };
+
+        // Strategic Intelligence Mapping
+        const strategicMap = {
+            usa: {
+                badge: 'USA VVIP Investor',
+                pitch: 'Pitch "Currency Arbitrage": Show how USD in Egypt generates 10x the yield of US rentals without US property taxes. Use the Status Flip as a safe haven.'
+            },
+            school: {
+                badge: 'Education Hedge Lead',
+                pitch: 'Address the tuition pain. Show how the 8-week cycle in Madinaty covers international school fees indefinitely in USD. Secure their kids future.'
+            },
+            airbnb: {
+                badge: 'Airbnb Asset Host',
+                pitch: 'Pivot them from "Management Fatigue" to Capital Velocity. Why manage a daily rental when you can flip status for an immediate 800% ROI cycle?'
+            },
+            urgent: {
+                badge: 'Liquidity Squeeze',
+                pitch: 'Offer an immediate cash exit. Leverage the urgency to lock in a distressed acquisition at 30% below MV for the next flip.'
+            },
+            yt: {
+                badge: 'YouTube Raider Intel',
+                pitch: 'Address the specific market fear mentioned in the video. Position L-Hexagone as the only verified shield against currency erosion.'
+            },
+            gen: {
+                badge: 'VVIP Network Asset',
+                pitch: 'Use the standard 800% Velocity Blueprint. Focus on exclusivity and why we rejected Gulf institutional capital.'
+            }
+        };
+
+        function renderAll() {
+            viewVerified.innerHTML = vault.verified.length === 0 ? '<p style="text-align:center; color:#94a3b8; margin-top:100px;">Waiting for VVIP data ingestion...</p>' : '';
+            vault.verified.forEach((l, i) => {
+                const s = strategicMap[l.type] || strategicMap.gen;
+                viewVerified.innerHTML += `<div class="card">
+                    <i class="fa-solid fa-trash-can delete-btn" onclick="deleteItem('verified', ${i})"></i>
+                    <span class="badge b-${l.type}">${s.badge}</span>
+                    <div style="font-size:22px; font-weight:700; margin-bottom:8px;">${l.name}</div>
+                    <div style="color:var(--gold); font-size:16px; font-weight:700;"><i class="fa-solid fa-phone"></i> ${l.phone}</div>
+                    <div class="pitch-box"><b style="color:var(--gold); display:block; margin-bottom:5px;">STRATEGIC PITCH:</b>"${s.pitch}"</div>
+                </div>`;
+            });
+
+            archiveGrid.innerHTML = vault.archive.length === 0 ? '' : ''; 
+            vault.archive.forEach((it, i) => {
+                archiveGrid.innerHTML += `<div class="card" style="border-left:3px solid #94a3b8; opacity:0.8;">
+                    <i class="fa-solid fa-trash-can delete-btn" onclick="deleteItem('archive', ${i})"></i>
+                    <div style="font-size:13px; line-height:1.6;">${it.text}</div>
+                </div>`;
+            });
+
+            document.getElementById('countVerified').innerText = vault.verified.length;
+            document.getElementById('countArchive').innerText = vault.archive.length;
+            
+            if(vault.archive.length >= 3) { visionEngine.classList.remove('hidden'); runVision(); }
+            else { visionEngine.classList.add('hidden'); }
+        }
+
+        window.deleteItem = (type, index) => {
+            vault[type].splice(index, 1);
+            save();
+        };
+
+        function save() {
+            localStorage.setItem('hex_v13_vault', JSON.stringify(vault));
+            renderAll();
+        }
+
+        processBtn.addEventListener('click', () => {
+            const raw = dataInput.value.trim();
+            if(!raw) return;
+            processBtn.innerHTML = '<i class="fa-solid fa-cog fa-spin"></i> Mining Intelligence...';
+            
+            setTimeout(() => {
+                const phoneRegex = /(01[0-2,5]{1}[0-9]{8}|\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9})/;
+                const nameRegex = /([A-Z][a-z]+ [A-Z][a-z]+|[\u0600-\u06FF]+\s[\u0600-\u06FF]+)/;
+                const lower = raw.toLowerCase();
+                
+                let type = "gen";
+                if(lower.includes('usa') || lower.includes('classified') || lower.includes('state')) type = "usa";
+                else if(lower.includes('school') || lower.includes('مصاريف') || lower.includes('مدارس')) type = "school";
+                else if(lower.includes('airbnb') || lower.includes('superhost')) type = "airbnb";
+                else if(lower.includes('youtube') || lower.includes('watch?v=') || lower.includes('comment')) type = "yt";
+                else if(lower.includes('سفر') || lower.includes('لقطة') || lower.includes('كاش')) type = "urgent";
+
+                const lines = raw.split('\n');
+                lines.forEach(line => {
+                    const foundPhone = line.match(phoneRegex);
+                    const foundName = line.match(nameRegex);
+                    if(foundPhone) {
+                        if(!vault.verified.some(v => v.phone === foundPhone[0])) {
+                            vault.verified.unshift({ name: foundName ? foundName[0] : "New VVIP Asset", phone: foundPhone[0], type });
+                        }
+                    } else if (line.trim().length > 10) {
+                        if(!vault.archive.some(a => a.text === line)) {
+                            vault.archive.unshift({ text: line, type });
+                        }
+                    }
+                });
+                
+                save();
+                dataInput.value = '';
+                processBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Raid & Analyze Intelligence';
+            }, 1200);
+        });
+
+        function runVision() {
+            const allText = vault.archive.map(a => a.text).join(' ').toLowerCase();
+            let insights = "", hooks = "";
+            
+            if(allText.includes('school') || allText.includes('مصاريف')) {
+                insights += "<p>• <b>أزمة التعليم:</b> رصدنا تزايد في القلق من مصاريف المدارس. الجمهور VVIP بيغلي.</p>";
+                hooks += "<div class='pitch-box'><b>Hook:</b> 'ليه مصاريف المدرسة عبء سنوي؟ خلي عقارك يدفعها بالدولار للأبد من غير ما تمس رأسمالك.'</p>";
+            }
+            if(allText.includes('usa') || allText.includes('dollar')) {
+                insights += "<p>• <b>استثمار المغتربين:</b> رغبة قوية في الهروب من ضرائب أمريكا والعثور على عائد حقيقي بالدولار.</p>";
+                hooks += "<div class='pitch-box'><b>Hook:</b> 'عقارك في أمريكا بيجيب 4%؟ في مصر الـ 8x ROI مستنيك.. والتحصيل بالدولار.'</p>";
+            }
+            if(allText.includes('airbnb') || allText.includes('إدارة')) {
+                insights += "<p>• <b>إرهاق المضيفين:</b> أصحاب الشقق الفندقية تعبوا من الإدارة. وقت عرض الـ Exit السريع.</p>";
+                hooks += "<div class='pitch-box'><b>Hook:</b> 'كفاية قرف إدارة Airbnb.. حوّل استثمارك لـ Status Flip واقبض ثمن 8 سنين إيجار في شهرين.'</p>";
+            }
+
+            document.getElementById('visionInsights').innerHTML = insights || "<p>Analyzing trends for strategy generation...</p>";
+            document.getElementById('visionHooks').innerHTML = hooks || "<p>Feed more context to unlock hooks...</p>";
+        }
+
+        exportBtn.addEventListener('click', () => {
+            if(vault.verified.length === 0 && vault.archive.length === 0) return;
+            let csv = "Category,Name,Phone,Source,Strategic Pitch\n";
+            vault.verified.forEach(v => {
+                const s = strategicMap[v.type] || strategicMap.gen;
+                csv += `Verified Contact,"${v.name}","${v.phone}","${s.badge}","${s.pitch.replace(/"/g, '""')}"\n`;
+            });
+            vault.archive.forEach(a => {
+                csv += `Market Intel,,"","${a.type}","${a.text.replace(/"/g, '""')}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `LHexagone_Intelligence_v13_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        });
+
+        clearBtn.addEventListener('click', () => {
+            if(confirm("Are you sure? This will permanently wipe the entire VVIP Vault.")) {
+                vault = { verified: [], archive: [] };
+                save();
+            }
+        });
+
+        document.getElementById('tabVerified').addEventListener('click', () => { viewVerified.classList.remove('hidden'); viewArchive.classList.add('hidden'); document.getElementById('tabVerified').classList.add('active'); document.getElementById('tabArchive').classList.remove('active'); });
+        document.getElementById('tabArchive').addEventListener('click', () => { viewArchive.classList.remove('hidden'); viewVerified.classList.add('hidden'); document.getElementById('tabArchive').classList.add('active'); document.getElementById('tabVerified').classList.remove('active'); });
+
+        renderAll();
+    </script>
+</body>
+</html>
