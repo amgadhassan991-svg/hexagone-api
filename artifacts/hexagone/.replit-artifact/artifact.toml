@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/hexagone/"
+title = "L'Hexagone: Lead Intelligence"
+version = "1.0.0"
+id = "artifacts/hexagone"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/hexagone/" ]
+localPort = 20586
+
+[services.development]
+run = "pnpm --filter @workspace/hexagone run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/hexagone", "run", "build" ]
+publicDir = "artifacts/hexagone/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20586"
+BASE_PATH = "/hexagone/"
