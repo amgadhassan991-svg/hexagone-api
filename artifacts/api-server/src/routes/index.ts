@@ -5,6 +5,7 @@ import projectsRouter from "./projects";
 import tasksRouter from "./tasks";
 import dashboardRouter from "./dashboard";
 import intelRouter from "./intel";
+import campaignsRouter from "./campaigns";
 
 const router: IRouter = Router();
 
@@ -14,5 +15,6 @@ router.use(projectsRouter);
 router.use(tasksRouter);
 router.use(dashboardRouter);
 router.use(intelRouter);
+router.use(campaignsRouter);
 
 export default router;

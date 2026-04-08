@@ -8,9 +8,14 @@ import { IntelligenceTab } from "./components/IntelligenceTab";
 import { IngestionTab } from "./components/IngestionTab";
 import { VisionTab } from "./components/VisionTab";
 import { Sidebar } from "./components/Sidebar";
+import { CampaignTab } from "./components/CampaignTab";
 
-const STORAGE_KEY_LEADS = "hexagone_leads_v1";
-const STORAGE_KEY_INTEL = "hexagone_intel_v1";
+type ExtendedTab = ActiveTab | "campaign";
+
+const STORAGE_KEY_LEADS = "hexagone_leads_v2";
+const STORAGE_KEY_INTEL = "hexagone_intel_v2";
+
+const API_BASE = "";
 
 function loadLeads(): Lead[] {
   try {
@@ -33,7 +38,7 @@ function loadIntel(): IntelPost[] {
 export default function App() {
   const [leads, setLeads] = useState<Lead[]>(loadLeads);
   const [intel, setIntel] = useState<IntelPost[]>(loadIntel);
-  const [activeTab, setActiveTab] = useState<ActiveTab>("ingestion");
+  const [activeTab, setActiveTab] = useState<ExtendedTab>("campaign");
   const [showWipeConfirm, setShowWipeConfirm] = useState(false);
 
   useEffect(() => {
@@ -43,12 +48,6 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY_INTEL, JSON.stringify(intel));
   }, [intel]);
-
-  useEffect(() => {
-    if (leads.length > 0 && activeTab === "ingestion") {
-      setActiveTab("vvip");
-    }
-  }, []);
 
   function handleLeadsFound(newLeads: Lead[]) {
     setLeads((prev) => [...newLeads, ...prev]);
@@ -72,49 +71,39 @@ export default function App() {
     setIntel((prev) => prev.filter((p) => p.id !== id));
   }
 
-  function handleWipe() {
-    setShowWipeConfirm(true);
-  }
-
   function confirmWipe() {
     setLeads([]);
     setIntel([]);
     setShowWipeConfirm(false);
-    setActiveTab("ingestion");
+    setActiveTab("campaign");
   }
 
   const tabs = [
-    { id: "vvip" as ActiveTab, label: "Leads", icon: "👥", count: leads.length },
-    { id: "intelligence" as ActiveTab, label: "Market Intel", icon: "📡", count: intel.length },
-    { id: "ingestion" as ActiveTab, label: "Ingestion Hub", icon: "⚡" },
-    { id: "vision" as ActiveTab, label: "Vision Engine", icon: "🔮" },
+    { id: "campaign" as ExtendedTab, label: "🇸🇦 Madinaty Campaign", icon: "" },
+    { id: "vvip" as ExtendedTab, label: "Lead Vault", icon: "👥", count: leads.length },
+    { id: "intelligence" as ExtendedTab, label: "Market Intel", icon: "📡", count: intel.length },
+    { id: "ingestion" as ExtendedTab, label: "Ingestion", icon: "⚡" },
+    { id: "vision" as ExtendedTab, label: "Vision Engine", icon: "🔮" },
   ];
 
   return (
-    <div className="min-h-screen" style={{ background: "#020617" }}>
+    <div className="terminal-bg min-h-screen" style={{ background: "radial-gradient(ellipse at 20% 50%, rgba(212,175,55,0.03) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(59,130,246,0.03) 0%, transparent 60%), #030712" }}>
       <div className="max-w-6xl mx-auto">
         <CoverBanner />
-        <ProfileRow leads={leads} onWipe={handleWipe} />
-        <TabBar active={activeTab} onSelect={setActiveTab} tabs={tabs} />
+        <ProfileRow leads={leads} onWipe={() => setShowWipeConfirm(true)} />
+        <TabBar active={activeTab as string} onSelect={(t) => setActiveTab(t as ExtendedTab)} tabs={tabs} />
 
-        <div className="flex gap-0 sm:gap-6 p-0 sm:p-4">
+        <div className="flex gap-6 p-4">
           <div className="flex-1 min-w-0">
-            {activeTab === "vvip" && (
-              <VVIPTab leads={leads} onUpdate={handleUpdateLead} onDelete={handleDeleteLead} />
-            )}
-            {activeTab === "intelligence" && (
-              <IntelligenceTab posts={intel} onDelete={handleDeleteIntel} />
-            )}
-            {activeTab === "ingestion" && (
-              <IngestionTab onLeadsFound={handleLeadsFound} onIntelPost={handleIntelPost} />
-            )}
-            {activeTab === "vision" && (
-              <VisionTab leads={leads} />
-            )}
+            {activeTab === "campaign" && <CampaignTab apiBase={API_BASE} />}
+            {activeTab === "vvip" && <VVIPTab leads={leads} onUpdate={handleUpdateLead} onDelete={handleDeleteLead} />}
+            {activeTab === "intelligence" && <IntelligenceTab posts={intel} onDelete={handleDeleteIntel} />}
+            {activeTab === "ingestion" && <IngestionTab onLeadsFound={handleLeadsFound} onIntelPost={handleIntelPost} />}
+            {activeTab === "vision" && <VisionTab leads={leads} />}
           </div>
 
-          <div className="hidden lg:block w-72 flex-shrink-0">
-            <div className="sticky top-4 pt-4">
+          <div className="hidden lg:block w-64 flex-shrink-0">
+            <div className="sticky top-4">
               <Sidebar leads={leads} />
             </div>
           </div>
@@ -124,35 +113,22 @@ export default function App() {
       {showWipeConfirm && (
         <div
           className="fixed inset-0 flex items-center justify-center z-50 p-4"
-          style={{ background: "rgba(2,6,23,0.85)", backdropFilter: "blur(4px)" }}
+          style={{ background: "rgba(3,7,18,0.9)", backdropFilter: "blur(8px)" }}
           onClick={() => setShowWipeConfirm(false)}
         >
           <div
-            className="rounded-2xl p-6 max-w-sm w-full animate-slide-up"
-            style={{ background: "#0f172a", border: "1px solid rgba(239,68,68,0.3)" }}
+            className="rounded-2xl p-6 max-w-sm w-full animate-slide-up glass"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="text-xl mb-2">⚠️</div>
-            <h3 className="text-lg font-bold mb-2" style={{ color: "#f87171" }}>Wipe All Data?</h3>
+            <h3 className="text-lg font-bold mb-2" style={{ color: "#f87171" }}>Wipe All Local Data?</h3>
             <p className="text-sm mb-5" style={{ color: "#94a3b8" }}>
-              This will permanently delete all {leads.length} leads and {intel.length} intelligence posts from the vault. 
-              This action cannot be undone.
+              This clears your local lead vault and intel archive ({leads.length} leads, {intel.length} posts).
+              Campaign data in the database is not affected.
             </p>
             <div className="flex gap-3">
-              <button
-                onClick={() => setShowWipeConfirm(false)}
-                className="flex-1 py-2 rounded-lg text-sm font-semibold"
-                style={{ background: "#1e293b", color: "#94a3b8" }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmWipe}
-                className="flex-1 py-2 rounded-lg text-sm font-bold"
-                style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.4)", color: "#f87171" }}
-              >
-                Wipe Vault
-              </button>
+              <button onClick={() => setShowWipeConfirm(false)} className="flex-1 py-2 rounded-lg text-sm font-semibold" style={{ background: "#1e293b", color: "#94a3b8" }}>Cancel</button>
+              <button onClick={confirmWipe} className="flex-1 py-2 rounded-lg text-sm font-bold" style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.4)", color: "#f87171" }}>Wipe Local</button>
             </div>
           </div>
         </div>
