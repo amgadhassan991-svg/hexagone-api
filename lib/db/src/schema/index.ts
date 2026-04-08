@@ -5,3 +5,4 @@ export * from "./activity";
 export * from "./fb_profiles";
 export * from "./strategic_pitches";
 export * from "./campaigns";
+export * from "./seller_posts";
