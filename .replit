@@ -27,3 +27,12 @@ timeoutMs = 20000
 
 [nix]
 channel = "stable-25_05"
+
+[rules]
+
+[rules.formatter]
+
+[rules.formatter.fileExtensions]
+
+[rules.formatter.fileExtensions.".json"]
+id = "module:nodejs-24/languageServer:typescript-language-server"
