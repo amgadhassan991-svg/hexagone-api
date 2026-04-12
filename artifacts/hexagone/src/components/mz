@@ -1,2 +1,0 @@
- null value in column "raw_text" of relation "seller_posts" violates not-null constraint
-await supabase.from('seller_posts').insert({ raw_text: rawData })
