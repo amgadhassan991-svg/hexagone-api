@@ -34,5 +34,5 @@ channel = "stable-25_05"
 
 [rules.formatter.fileExtensions]
 
-[rules.formatter.fileExtensions.".json"]
-id = "module:nodejs-24/languageServer:typescript-language-server"
+[rules.formatter.fileExtensions.".tsx"]
+id = "module:nodejs-24/formatter:prettier"

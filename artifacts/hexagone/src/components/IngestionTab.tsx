@@ -1,87 +1,213 @@
-import { useState } from "react"
-import { createClient } from "@supabase/supabase-js"
+import { useState } from "react";
+import { Lead, IntelPost } from "../types";
+import { processRawText, processIntelPost } from "../lib/leadEngine";
 
-// ÙÙ Ø¹ÙØ¯Ù supabase client Ø¬Ø§ÙØ² ÙÙ ÙØ´Ø±ÙØ¹ÙØ Ø§ÙØ³Ø­ Ø§ÙØ³Ø·Ø±ÙÙ Ø¯ÙÙ ÙØ§Ø³ØªÙØ±Ø¯ ÙÙ Ø¹ÙØ¯Ù
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL!,
-  import.meta.env.VITE_SUPABASE_ANON_KEY!
-)
+interface Props {
+  onLeadsFound: (leads: Lead[]) => void;
+  onIntelPost: (post: IntelPost) => void;
+}
 
-export default function IngestionTab({ onSuccess }: { onSuccess?: () => void }) {
-  const [rawData, setRawData] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState("")
+export function IngestionTab({ onLeadsFound, onIntelPost }: Props) {
+  const [raw, setRaw] = useState("");
+  const [lastResult, setLastResult] = useState<{
+    leads: number;
+    intel: boolean;
+  } | null>(null);
+  const [processing, setProcessing] = useState(false);
 
-  const extractEgyptPhones = (text: string): string[] => {
-    const regex = /(?:\+20|0020|0)?1[0125]\d{8}/g
-    const matches = text.match(regex) || []
-    return matches
-      .map(p => p.replace(/^0020/, "+20").replace(/^0/, "+20"))
-      .map(p => p.startsWith("+") ? p : `+20${p.slice(-10)}`)
-      .filter(p => {
-        const digits = p.replace(/\D/g, "")
-        if (digits.includes("12345678")) return false
-        if (digits.includes("00000000")) return false
-        if (digits.length !== 12) return false
-        return true
-      })
-      .filter((v, i, a) => a.indexOf(v) === i)
-  }
-
-  const handleRaid = async () => {
-    const cleanText = (rawData || "").trim()
-    if (!cleanText) {
-      setMessage("Ø­Ø· ÙØµ Ø§ÙØ§ÙÙ")
-      return
-    }
-    setLoading(true)
-    setMessage("")
-    try {
-      const phones = extractEgyptPhones(cleanText)
-      if (phones.length === 0) {
-        setMessage("ÙÙÙØ´ Ø±ÙÙ ÙØµØ±Ù ØµØ­ÙØ­ ÙÙ Ø§ÙÙØµ")
-        setLoading(false)
-        return
+  function handleProcess() {
+    if (!raw.trim()) return;
+    setProcessing(true);
+    setTimeout(() => {
+      const leads = processRawText(raw);
+      if (leads.length > 0) {
+        onLeadsFound(leads);
+        setLastResult({ leads: leads.length, intel: false });
+      } else {
+        const post = processIntelPost(raw);
+        onIntelPost(post);
+        setLastResult({ leads: 0, intel: true });
       }
-      for (const phone of phones) {
-        const { error } = await supabase.from("seller_posts").insert({
-          raw_text: cleanText,
-          phone: phone,
-          source: "manual_raid",
-          created_at: new Date().toISOString(),
-          status: "new"
-        })
-        if (error) throw error
-      }
-      setMessage(`â ØªÙ Ø­ÙØ¸ ${phones.length} Ø±ÙÙ`)
-      setRawData("")
-      onSuccess?.()
-    } catch (err: any) {
-      setMessage(`Ø®Ø·Ø£: ${err.message}`)
-    } finally {
-      setLoading(false)
-    }
+      setRaw("");
+      setProcessing(false);
+    }, 300);
   }
 
   return (
-    <div className="p-6 bg-[#0f172a] rounded-2xl border border-slate-800">
-      <h3 className="text-white font-bold mb-4">RAID DATABASE</h3>
-      <textarea
-        value={rawData}
-        onChange={(e) => setRawData(e.target.value)}
-        placeholder="Ø§ÙØµÙ Ø¨ÙØ³Øª ÙÙ ÙÙØ³Ø¨ÙÙ ÙÙØ§..."
-        className="w-full h-48 bg-black border border-slate-700 rounded-xl p-4 text-slate-200 text-sm font-mono resize-none focus:border-[#d4af37] outline-none"
-        dir="auto"
-      />
-      <button
-        onClick={handleRaid}
-        disabled={loading}
-        className="w-full mt-4 py-3 bg-[#d4af37] text-black font-black rounded-xl uppercase tracking-widest text-xs hover:bg-[#f1d592] disabled:opacity-50"
+    <div className="p-4 space-y-4">
+      <div
+        className="p-4 rounded-xl"
+        style={{
+          background: "#0f172a",
+          border: "1px solid rgba(212,175,55,0.12)",
+        }}
       >
-        {loading ? "Ø¬Ø§Ø±Ù Ø§ÙØ­ÙØ¸..." : "EXECUTE RAID"}
-      </button>
-      {message && <p className="mt-3 text-center text-sm text-[#d4af37]">{message}</p>}
-      <p className="mt-4 text-[10px] text-slate-600 text-center">Ø¨ÙÙØ¨Ù Ø§Ø±ÙØ§Ù ÙØµØ± Ø¨Ø³ 010 011 012 015</p>
+        <div className="flex items-center gap-2 mb-3">
+          <span style={{ color: "#d4af37" }}>⚡</span>
+          <h3 className="font-bold" style={{ color: "#d4af37" }}>
+            Intelligence Ingestion Engine
+          </h3>
+        </div>
+        <p className="text-sm mb-4" style={{ color: "#64748b" }}>
+          Paste raw post content, comments, or messages below. The engine will
+          extract leads with phone numbers and file everything else as market
+          intelligence.
+        </p>
+
+        <textarea
+          value={raw}
+          onChange={(e) => setRaw(e.target.value)}
+          rows={10}
+          placeholder={`Paste raw data here...\n\nExample:\n  Hi my name is Sarah Johnson\n  Interested in USA visa process\n  Please call me at 555-867-5309\n  Ready to start immediately\n\nOr paste multiple posts separated by blank lines.`}
+          className="w-full p-3 rounded-lg text-sm resize-none font-mono"
+          style={{
+            background: "#0a0f1e",
+            border: "1px solid rgba(212,175,55,0.15)",
+            color: "#f1f5f9",
+            outline: "none",
+            lineHeight: 1.7,
+          }}
+        />
+
+        <div className="flex items-center justify-between mt-3">
+          <div className="text-xs" style={{ color: "#374151" }}>
+            {raw.length > 0
+              ? `${raw.length} characters · ${raw.split("\n").length} lines`
+              : "Ready to process"}
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                setRaw("");
+                setLastResult(null);
+              }}
+              className="px-3 py-2 rounded-lg text-sm transition-all"
+              style={{ background: "rgba(148,163,184,0.08)", color: "#64748b" }}
+            >
+              Clear
+            </button>
+            <button
+              onClick={handleProcess}
+              disabled={!raw.trim() || processing}
+              className="px-5 py-2 rounded-lg text-sm font-bold transition-all"
+              style={{
+                background: raw.trim()
+                  ? "linear-gradient(135deg, #d4af37, #a8882a)"
+                  : "rgba(212,175,55,0.15)",
+                color: raw.trim() ? "#020617" : "#64748b",
+                cursor: raw.trim() ? "pointer" : "not-allowed",
+              }}
+            >
+              {processing ? "Processing..." : "⚡ Process Intelligence"}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {lastResult && (
+        <div
+          className="p-4 rounded-xl animate-slide-up"
+          style={{
+            background:
+              lastResult.leads > 0
+                ? "rgba(212,175,55,0.08)"
+                : "rgba(59,130,246,0.08)",
+            border: `1px solid ${lastResult.leads > 0 ? "rgba(212,175,55,0.25)" : "rgba(59,130,246,0.25)"}`,
+          }}
+        >
+          {lastResult.leads > 0 ? (
+            <div>
+              <div className="font-bold" style={{ color: "#d4af37" }}>
+                ✦ {lastResult.leads} lead{lastResult.leads !== 1 ? "s" : ""}{" "}
+                extracted and added to the vault
+              </div>
+              <div className="text-sm mt-1" style={{ color: "#94a3b8" }}>
+                Switch to the Leads tab to review, qualify, and engage.
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div className="font-bold" style={{ color: "#60a5fa" }}>
+                📡 No phone numbers detected — filed as market intelligence
+              </div>
+              <div className="text-sm mt-1" style={{ color: "#94a3b8" }}>
+                Check the Market Intelligence tab for archived posts.
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div
+        className="p-4 rounded-xl"
+        style={{
+          background: "#0f172a",
+          border: "1px solid rgba(148,163,184,0.06)",
+        }}
+      >
+        <div
+          className="font-semibold text-sm mb-3"
+          style={{ color: "#94a3b8" }}
+        >
+          📊 Detection Capabilities
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            {
+              icon: "📞",
+              label: "Phone Extraction",
+              desc: "US format numbers (555-xxx-xxxx, (555) xxx-xxxx, +1...)",
+            },
+            {
+              icon: "👤",
+              label: "Name Detection",
+              desc: "Identifies lead names from post context",
+            },
+            {
+              icon: "🎯",
+              label: "Category Scoring",
+              desc: "USA · Education · Airbnb · YouTube · Urgent",
+            },
+            {
+              icon: "⚡",
+              label: "Priority Engine",
+              desc: "100-point score based on urgency, intent & keywords",
+            },
+            {
+              icon: "🔮",
+              label: "Strategic Hooks",
+              desc: "Auto-generates category-specific pitch angles",
+            },
+            {
+              icon: "📡",
+              label: "Intel Archive",
+              desc: "Non-lead posts filed as market intelligence",
+            },
+          ].map((item) => (
+            <div
+              key={item.label}
+              className="p-3 rounded-lg"
+              style={{
+                background: "#0a0f1e",
+                border: "1px solid rgba(148,163,184,0.04)",
+              }}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <span>{item.icon}</span>
+                <span
+                  className="text-xs font-semibold"
+                  style={{ color: "#f1f5f9" }}
+                >
+                  {item.label}
+                </span>
+              </div>
+              <p className="text-xs" style={{ color: "#475569" }}>
+                {item.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
-  )
+  );
 }
