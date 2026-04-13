@@ -20,7 +20,7 @@ runButton = "Project"
 [[workflows.workflow]]
 name = "artifacts/hexagone: web"
 author = "agent"
-mode = "sequential"
+mode = "parallel"
 
 [workflows.workflow.metadata]
 outputType = "webview"
@@ -58,22 +58,17 @@ PORT = "18497"
 BASE_PATH = "/"
 
 [[workflows.workflow]]
-name = "artifacts/api-server: API Server"
+name = "artifacts/api-server:AIzaSyCBwTUFnWhve9ZOQNVOsTRGlU38mrCyJJ4"
+mode = "parallel"
 author = "agent"
-mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "artifacts/api-server: API Server"
 
 [workflows.workflow.metadata]
 outputType = "webview"
 artifactId = "3B4_FFSkEVBkAeYMFRJ2e"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pnpm --filter @workspace/api-server run dev"
-cwd = "./artifacts/api-server"
-waitForPort = 8080
-
-[workflows.workflow.tasks.env]
-PORT = "8080"
 
 [[workflows.workflow]]
 name = "artifacts/mockup-sandbox: Component Preview Server"
@@ -94,6 +89,42 @@ waitForPort = 8081
 [workflows.workflow.tasks.env]
 PORT = "8081"
 BASE_PATH = "/__mockup"
+
+[[workflows.workflow]]
+name = "artifacts/api-server: AIzaSyCBwTUFnWhve9ZOQNVOsTRGlU38mrCyJJ4"
+mode = "sequential"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/api-server run dev"
+cwd = "./artifacts/api-server"
+waitForPort = 8080
+
+[workflows.workflow.tasks.env]
+PORT = "8080"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+artifactId = "3B4_FFSkEVBkAeYMFRJ2e"
+
+[[workflows.workflow]]
+name = "artifacts/api-server: API Server"
+author = "agent"
+mode = "sequential"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+artifactId = "3B4_FFSkEVBkAeYMFRJ2e"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/api-server run dev"
+cwd = "./artifacts/api-server"
+waitForPort = 8080
+
+[workflows.workflow.tasks.env]
+PORT = "8080"
 
 [agent]
 stack = "PNPM_WORKSPACE"
