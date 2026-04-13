@@ -47,8 +47,15 @@ outputType = "webview"
 artifactId = "artifacts/project-manager"
 
 [[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "artifacts/api-server: API Server"
+task = "shell.exec"
+args = "pnpm --filter @workspace/project-manager run dev"
+cwd = "./artifacts/project-manager"
+waitForPort = 18497
+router = "path"
+
+[workflows.workflow.tasks.env]
+PORT = "18497"
+BASE_PATH = "/"
 
 [[workflows.workflow]]
 name = "artifacts/api-server: API Server"
