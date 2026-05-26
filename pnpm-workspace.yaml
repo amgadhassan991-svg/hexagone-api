@@ -176,3 +176,7 @@ overrides:
   "ajv>fast-uri": "3.1.2"
   # brace-expansion: GHSA-f886-m6hf-6m8v — patched >=2.0.3
   brace-expansion: "2.1.1"
+  # qs: GHSA-q8mj-m7cp-5q26 (DoS via stringify crash) — patched >=6.15.2
+  qs: "6.15.2"
+  # postcss: GHSA-qx2v-qp2m-jg93 (XSS via unescaped </style>) — patched >=8.5.10
+  postcss: "8.5.10"
