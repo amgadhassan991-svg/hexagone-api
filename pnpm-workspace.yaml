@@ -66,7 +66,7 @@ catalog:
   tailwind-merge: ^3.3.1
   tailwindcss: ^4.1.14
   tsx: ^4.21.0
-  vite: ^7.3.2
+  vite: ^7.3.5
   zod: ^3.25.76
 
 autoInstallPeers: false
@@ -180,3 +180,7 @@ overrides:
   qs: "6.15.2"
   # postcss: GHSA-qx2v-qp2m-jg93 (XSS via unescaped </style>) — patched >=8.5.10
   postcss: "8.5.10"
+  # @babel/core: GHSA-4x5r-pxfx-6jf8 — patched >=7.29.6
+  "@babel/core": "7.29.7"
+  # js-yaml: GHSA-h67p-54hq-rp68 — patched >=4.2.0
+  js-yaml: "4.2.0"
