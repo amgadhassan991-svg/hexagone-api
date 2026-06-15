@@ -3,6 +3,7 @@ import cors from "cors";
 import { pinoHttp } from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import { analyticsMiddleware } from "./middlewares/analytics";
 
 const app: Express = express();
 
@@ -32,6 +33,9 @@ app.use(
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Vercel Analytics - Track API requests
+app.use(analyticsMiddleware);
 
 // Routes
 app.use("/api", router);
