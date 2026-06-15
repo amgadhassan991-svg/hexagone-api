@@ -1,0 +1,126 @@
+"use client";
+
+import { useState } from "react";
+
+export default function DomainHub() {
+  const [lead, setLead] = useState({ name: "", phone: "", notes: "" });
+  const [result, setResult] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  const analyzeLead = async () => {
+    if (!lead.name || !lead.notes) return alert("اكتب الاسم والملاحظات الأول!");
+    
+    setLoading(true);
+    try {
+      const res = await fetch("/api/beast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(lead),
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        setResult(data.data);
+      } else {
+        alert("حصلت مشكلة: " + data.error);
+      }
+    } catch (err) {
+      alert("مشكلة في الربط مع السيرفر.");
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-900 text-slate-100 p-8 font-sans" dir="rtl">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-4xl font-bold text-cyan-400 mb-2">🎯 Domain Hub</h1>
+        <p className="text-slate-400 mb-8">وضع المخابرات - فلترة الحيتان وصناعة السكريبتات</p>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Form Section */}
+          <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
+            <h2 className="text-xl font-semibold mb-4 text-white">بيانات العميل</h2>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm mb-1 text-slate-300">الاسم</label>
+                <input 
+                  type="text" 
+                  className="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:border-cyan-400 outline-none"
+                  placeholder="مثال: أحمد عبد الله"
+                  onChange={(e) => setLead({...lead, name: e.target.value})}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm mb-1 text-slate-300">التليفون</label>
+                <input 
+                  type="text" 
+                  className="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:border-cyan-400 outline-none"
+                  placeholder="010..."
+                  onChange={(e) => setLead({...lead, phone: e.target.value})}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm mb-1 text-slate-300">الملاحظات (وظيفته، منطقته، الداتا المسحوبة)</label>
+                <textarea 
+                  rows={4}
+                  className="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:border-cyan-400 outline-none"
+                  placeholder="شغال مدير مبيعات، ساكن في التجمع، بيدور على تاون هاوس..."
+                  onChange={(e) => setLead({...lead, notes: e.target.value})}
+                ></textarea>
+              </div>
+
+              <button 
+                onClick={analyzeLead}
+                disabled={loading}
+                className="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-bold py-3 px-4 rounded transition-all"
+              >
+                {loading ? "الوحش بيفصص الداتا... ⏳" : "شغّل الوحش وافرز العميل 🚀"}
+              </button>
+            </div>
+          </div>
+
+          {/* Results Section */}
+          <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
+            <h2 className="text-xl font-semibold mb-4 text-white">التحليل والسكريبت</h2>
+            
+            {!result && !loading && (
+              <div className="text-slate-500 text-center mt-10">النتيجة هتظهر هنا بعد الفرز...</div>
+            )}
+
+            {result && (
+              <div className="space-y-6">
+                <div className="bg-slate-900 p-4 rounded border border-slate-600">
+                  <span className="text-xs text-slate-400 block mb-1">التقييم (Fit Score)</span>
+                  <div className="flex items-center gap-3">
+                    <div className="text-3xl font-bold text-cyan-400">{result.fit_score * 100}%</div>
+                    <div className="text-sm text-slate-300">
+                      {result.fit_score >= 0.7 ? "🔥 حوت تقيل - دوس معاه" : "⚠️ بلح - ركّز في غيره"}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-slate-900 p-4 rounded border border-slate-600">
+                  <span className="text-xs text-cyan-400 block mb-2 font-bold">الافتتاحية (The Hook)</span>
+                  <p className="text-white text-lg">{result.pitch_headline}</p>
+                </div>
+
+                <div className="bg-slate-900 p-4 rounded border border-slate-600">
+                  <span className="text-xs text-cyan-400 block mb-2 font-bold">رسالة الواتساب / المكالمة</span>
+                  <p className="text-slate-200 whitespace-pre-wrap leading-relaxed">{result.pitch_body}</p>
+                </div>
+
+                <div className="bg-slate-900 p-4 rounded border border-slate-600">
+                  <span className="text-xs text-red-400 block mb-2 font-bold">القفلة (Closing Move)</span>
+                  <p className="text-white font-semibold">{result.closing_move}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
