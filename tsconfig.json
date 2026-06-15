@@ -8,6 +8,9 @@
     },
     {
       "path": "./lib/api-client-react"
+    },
+    {
+      "path": "./lib/integrations-gemini-ai"
     }
   ]
 }

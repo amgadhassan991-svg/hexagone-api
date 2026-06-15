@@ -7,6 +7,7 @@ import dashboardRouter from "./dashboard";
 import intelRouter from "./intel";
 import campaignsRouter from "./campaigns";
 import sellersRouter from "./sellers";
+import beastRouter from "./beast";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use(dashboardRouter);
 router.use(intelRouter);
 router.use(campaignsRouter);
 router.use(sellersRouter);
+router.use(beastRouter);
 
 export default router;

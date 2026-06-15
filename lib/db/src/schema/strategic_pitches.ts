@@ -1,1 +1,19 @@
-//replit.com/referral-code/${h}?source=badge&referrer=${encodeURIComponent(window.location.origin)}`:"https://join.replit.com/badge_v3";if(d&&m&&window.parent){let i={type:"CLICKED_MADE_WITH_REPLIT_BADGE"};window.parent.postMessage(i,"*")}else window.open(o,"_blank")}},r.onclick=t=>{t.stopPropagation(),n.style.display="none";try{window.localStorage.setItem("replit-pill-preference","hidden")}catch{}},b.appendChild(w),b.appendChild(n),document.body.appendChild(c),d&&m?window.addEventListener("message",t=>{let o=t.origin,i=new URL(o),f=i.hostname==="replit.com"||i.hostname.endsWith(".replit.com")||i.hostname.endsWith(".replit.dev")||i.hostname.endsWith(".repl.co"),p=!1;if(document.referrer)try{let S=new URL(document.referrer).origin;p=o===S}catch{}if(!f&&!p)return;let e=t.data;if(!(!e||typeof e!="object"||!e.type)){if(e.type==="SHOW_MADE_WITH_REPLIT_BADGE"){if(s)return;n.style.display="inline-flex",s=!0}else if(e.type==="HIDE_MADE_WITH_REPLIT_BADGE"){if(!s)return;n.style.display="none",s=!1}}}):s=!0}catch{}};document.readyState==="complete"||document.readyState==="interactive"?setTimeout(C,100):document.addEventListener("DOMContentLoaded",C)})();})();
+import { pgTable, serial, text, timestamp, jsonb, integer } from "drizzle-orm/pg-core";
+
+export const strategicPitchesTable = pgTable("strategic_pitches", {
+  id: serial("id").primaryKey(),
+  profileId: integer("profile_id"),
+  profileUrl: text("profile_url"),
+  profileName: text("profile_name"),
+  bio: text("bio"),
+  velocityCategory: text("velocity_category"),
+  velocityScore: integer("velocity_score").notNull().default(0),
+  pitchHeadline: text("pitch_headline"),
+  pitchBody: text("pitch_body"),
+  hooks: jsonb("hooks").$type<string[]>().default([]),
+  closingMove: text("closing_move"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type StrategicPitch = typeof strategicPitchesTable.$inferSelect;
+export type InsertStrategicPitch = typeof strategicPitchesTable.$inferInsert;

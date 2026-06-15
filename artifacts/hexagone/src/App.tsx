@@ -10,8 +10,9 @@ import { VisionTab } from "./components/VisionTab";
 import { Sidebar } from "./components/Sidebar";
 import { CampaignTab } from "./components/CampaignTab";
 import { SellerScannerTab } from "./components/SellerScannerTab";
+import { DomainHub } from "./components/DomainHub";
 
-type ExtendedTab = ActiveTab | "campaign" | "seller";
+type ExtendedTab = ActiveTab | "campaign" | "seller" | "beast";
 
 const STORAGE_KEY_LEADS = "hexagone_leads_v2";
 const STORAGE_KEY_INTEL = "hexagone_intel_v2";
@@ -82,6 +83,7 @@ export default function App() {
   const tabs = [
     { id: "campaign" as ExtendedTab, label: "🇸🇦 Madinaty Campaign", icon: "" },
     { id: "seller" as ExtendedTab, label: "🕵️ Seller Scanner", icon: "" },
+    { id: "beast" as ExtendedTab, label: "Domain Hub", icon: "🎯" },
     { id: "vvip" as ExtendedTab, label: "Lead Vault", icon: "👥", count: leads.length },
     { id: "intelligence" as ExtendedTab, label: "Market Intel", icon: "📡", count: intel.length },
     { id: "ingestion" as ExtendedTab, label: "Ingestion", icon: "⚡" },
@@ -99,6 +101,7 @@ export default function App() {
           <div className="flex-1 min-w-0">
             {activeTab === "campaign" && <CampaignTab apiBase={API_BASE} />}
             {activeTab === "seller" && <SellerScannerTab apiBase={API_BASE} />}
+            {activeTab === "beast" && <DomainHub />}
             {activeTab === "vvip" && <VVIPTab leads={leads} onUpdate={handleUpdateLead} onDelete={handleDeleteLead} />}
             {activeTab === "intelligence" && <IntelligenceTab posts={intel} onDelete={handleDeleteIntel} />}
             {activeTab === "ingestion" && <IngestionTab onLeadsFound={handleLeadsFound} onIntelPost={handleIntelPost} />}
