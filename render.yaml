@@ -1,13 +1,35 @@
 services:
   - type: web
     name: hexagone-api
-    runtime: docker
-    dockerfilePath: ./Dockerfile
-    # Render injects PORT automatically — no need to set it here
+    runtime: node
+    region: frankfurt          # closest to Egypt/MENA — change to 'oregon' or 'ohio' if preferred
+
+    # ── Build ──────────────────────────────────────────────────────────────────
+    # 1. Activate pnpm (pinned to exact workspace version)
+    # 2. Install all workspace dependencies from the lockfile
+    # 3. Compile the API server with esbuild → artifacts/api-server/dist/
+    buildCommand: >
+      corepack enable &&
+      corepack prepare pnpm@10.26.1 --activate &&
+      pnpm install --frozen-lockfile &&
+      pnpm --filter @workspace/api-server run build
+
+    # ── Start ──────────────────────────────────────────────────────────────────
+    # Render injects $PORT automatically — the server reads it from process.env
+    startCommand: node --enable-source-maps ./artifacts/api-server/dist/index.mjs
+
+    # ── Environment Variables ──────────────────────────────────────────────────
     envVars:
       - key: NODE_ENV
-        value: production
+        value: production               # hardcoded — do not change
+
+      - key: PORT
+        generateValue: false            # Render sets this automatically — do not touch
+
       - key: DATABASE_URL
-        sync: false   # set manually in Render dashboard
+        sync: false                     # REQUIRED — paste your PostgreSQL connection string
+                                        # Format: postgresql://USER:PASSWORD@HOST:5432/DBNAME
+                                        # Free options: Render Postgres, Supabase, Neon
+
       - key: GEMINI_API_KEY
-        sync: false   # set manually in Render dashboard
+        sync: false                     # REQUIRED — from https://aistudio.google.com/apikey
