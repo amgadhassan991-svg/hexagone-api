@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: hexagone-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    # Render injects PORT automatically — no need to set it here
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false   # set manually in Render dashboard
+      - key: GEMINI_API_KEY
+        sync: false   # set manually in Render dashboard

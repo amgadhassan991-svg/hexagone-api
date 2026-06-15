@@ -1,0 +1,38 @@
+# ── Dependencies (reinstalled inside Docker) ──────────────────────────────────
+**/node_modules
+
+# ── Build outputs (rebuilt inside Docker) ────────────────────────────────────
+**/dist
+**/*.tsbuildinfo
+
+# ── Frontend artifacts (not needed by the API server) ────────────────────────
+artifacts/hexagone
+artifacts/mockup-sandbox
+artifacts/project-manager
+
+# ── Replit-specific files ─────────────────────────────────────────────────────
+.replit
+replit.nix
+.local/
+.upm/
+.cache/
+.breakpoints
+
+# ── Git ───────────────────────────────────────────────────────────────────────
+.git
+.gitignore
+.gitattributes
+
+# ── Secrets & environment ────────────────────────────────────────────────────
+.env
+.env.*
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+**/*.log
+npm-debug.log*
+
+# ── Editor ───────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
