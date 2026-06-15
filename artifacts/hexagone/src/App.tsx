@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Analytics } from '@vercel/analytics/react';
 import { Lead, IntelPost, ActiveTab } from "./types";
 import { CoverBanner } from "./components/CoverBanner";
 import { ProfileRow } from "./components/ProfileRow";
@@ -139,6 +140,7 @@ export default function App() {
           </div>
         </div>
       )}
+      <Analytics />
     </div>
   );
 }
